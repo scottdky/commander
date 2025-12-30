@@ -242,6 +242,56 @@ source ~/.commander-completion.bash
 source ~/.bash_aliascore
 ```
 
+### 6. Installing Dependencies
+
+Commander commands use various system tools and utilities. Package dependencies are managed through `packages.yaml`.
+
+**To install required packages:**
+
+1. Run the installation script:
+```bash
+python install_packages.py
+# or
+./install_packages.py
+```
+
+2. The script will:
+   - Scan `commands.yaml` and `custom.yaml` to find which commands are used
+   - Check which packages are already installed
+   - Show what needs to be installed and ask for confirmation
+   - Install apt packages automatically
+   - Provide instructions for custom/manual installations
+
+**Package Configuration (`packages.yaml`):**
+
+This file maps command names to their installation packages. You can edit it to add new mappings or change installation methods.
+
+Example structure:
+```yaml
+commands:
+  exa:
+    package: exa
+    method: apt
+
+  youtube-dl:
+    package: yt-dlp
+    method: custom
+    commands:
+      - "sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp"
+      - "sudo chmod a+rx /usr/local/bin/yt-dlp"
+    notes: "Replaces deprecated youtube-dl"
+
+  pet:
+    package: pet
+    method: manual
+    url: "https://github.com/knqyf263/pet"
+    notes: "Manual installation required"
+```
+
+Installation methods:
+- `apt`: Installed via apt-get
+- `custom`: Executed via custom shell commands
+- `manual`: Requires manual installation (instructions provided)
 
 ---
 
@@ -249,14 +299,7 @@ source ~/.bash_aliascore
 
 ```text
 [ commands.yaml ]  <-- YOU EDIT THIS
-       |
-       +-------------------------+
-       |                         |
-       v                         v
-[ commander.py ]      [ generate_alias_file.py ]
-       |                         |
-       v                         v
-  Interactive           [ .bash_aliases_gen ]
+
  Terminal Menu                   |
        |                         v
   Executes Cmds            Native Shell

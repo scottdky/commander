@@ -457,10 +457,6 @@ Bash:
     cmd: "nano ~/.bash_aliascore"
     desc: "Edit this alias file"
 
-  - name: geditalias
-    cmd: "gedit ~/.bash_aliascore"
-    desc: "Edit alias file with gedit"
-
   - name: katealias
     cmd: "kate ~/.bash_aliascore"
     desc: "Edit alias file with kate"
@@ -525,13 +521,13 @@ Search Functions:
 
 Audio/Video Tools:
   - name: getsong
-    cmd: "youtube-dl --extract-audio --audio-format mp3 --prefer-ffmpeg $1"
+    cmd: "yt-dlp --extract-audio --audio-format mp3 --prefer-ffmpeg $1"
     desc: "Download song from URL"
     args:
       - name: "URL"
 
   - name: getvideo
-    cmd: "youtube-dl $1"
+    cmd: "yt-dlp $1"
     desc: "Download video from URL"
     args:
       - name: "URL"

@@ -1,0 +1,173 @@
+# Commander Package Dependencies
+# Maps commands found in commands.yaml to their installation packages
+# Edit this file to add/remove package mappings as needed
+
+commands:
+  # Terminal utilities
+  exa:
+    package: exa
+    method: apt
+
+  ncdu:
+    package: ncdu
+    method: apt
+
+  pydf:
+    package: pydf
+    method: apt
+
+  pv:
+    package: pv
+    method: apt
+
+  bc:
+    package: bc
+    method: apt
+
+  # Snippet manager
+  pet:
+    package: pet
+    method: manual
+    url: "https://github.com/knqyf263/pet"
+    notes: "Manual installation required from GitHub releases"
+
+  # Network tools
+  arp-scan:
+    package: arp-scan
+    method: apt
+
+  nmap:
+    package: nmap
+    method: apt
+
+  avahi-browse:
+    package: avahi-utils
+    method: apt
+
+  lsof:
+    package: lsof
+    method: apt
+
+  netstat:
+    package: net-tools
+    method: apt
+
+  dig:
+    package: dnsutils
+    method: apt
+
+  ip:
+    package: iproute2
+    method: apt
+
+  nmcli:
+    package: network-manager
+    method: apt
+
+  # Media tools
+  mplayer:
+    package: mplayer
+    method: apt
+
+  vlc:
+    package: vlc
+    method: apt
+
+  youtube-dl:
+    package: yt-dlp
+    method: custom
+    commands:
+      - "sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp"
+      - "sudo chmod a+rx /usr/local/bin/yt-dlp"
+    notes: "Replaces deprecated youtube-dl with yt-dlp"
+
+  yt-dlp:
+    package: yt-dlp
+    method: custom
+    commands:
+      - "sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp"
+      - "sudo chmod a+rx /usr/local/bin/yt-dlp"
+    notes: "Actively maintained fork of youtube-dl. Requires ffmpeg for audio extraction."
+
+  mkvmerge:
+    package: mkvtoolnix
+    method: apt
+
+  ffmpeg:
+    package: ffmpeg
+    method: apt
+
+  # Image manipulation
+  mogrify:
+    package: imagemagick
+    method: apt
+
+  # Code analysis
+  cloc:
+    package: cloc
+    method: apt
+
+  # Text editors
+  kate:
+    package: kate
+    method: apt
+
+  # Docker tools
+  docker:
+    package: docker.io
+    method: apt
+
+  docker-compose:
+    package: docker-compose
+    method: apt
+
+  # Screen multiplexer
+  screen:
+    package: screen
+    method: apt
+
+  # Clipboard tools
+  xclip:
+    package: xclip
+    method: apt
+
+  # Web server tools
+  ab:
+    package: apache2-utils
+    method: apt
+
+  # Ebook tools
+  ebook-convert:
+    package: calibre
+    method: apt
+
+  # GUI tools
+  gucharmap:
+    package: gucharmap
+    method: apt
+
+  # Visualization
+  logstalgia:
+    package: logstalgia
+    method: apt
+
+  # Development tools
+  rsync:
+    package: rsync
+    method: apt
+
+  zip:
+    package: zip
+    method: apt
+
+  perl:
+    package: perl
+    method: apt
+
+  curl:
+    package: curl
+    method: apt
+
+  wget:
+    package: wget
+    method: apt
