@@ -1,0 +1,710 @@
+General:
+  - name: ..
+    cmd: "cd .."
+    desc: "Go up one directory"
+
+  - name: rm
+    cmd: "rm -I --preserve-root"
+    desc: "Do not delete / or prompt if deleting more than 3 files"
+
+  - name: chown
+    cmd: "chown --preserve-root"
+    desc: "Parenting changing perms on /"
+
+  - name: chmod
+    cmd: "chmod --preserve-root"
+    desc: "Parenting changing perms on /"
+
+  - name: chgrp
+    cmd: "chgrp --preserve-root"
+    desc: "Parenting changing perms on /"
+
+  - name: wget
+    cmd: "wget -c"
+    desc: "Resume wget by default"
+
+  - name: nano
+    cmd: "nano --linenumbers -cmET 4"
+    desc: "Nano with line numbers, mouse, and tabs"
+
+Pet Snippets:
+  - name: prun
+    cmd: "pet exec"
+    desc: "Execute pet snippet"
+
+  - name: pconf
+    cmd: "pet configure"
+    desc: "Configure pet"
+
+List Stuff:
+  - name: ll
+    cmd: "ls -lhF"
+    desc: "List detailed"
+
+  - name: la
+    cmd: "ls -lahF"
+    desc: "List all detailed"
+
+  - name: lsl
+    cmd: "ls -lhF | less"
+    desc: "List detailed with paging"
+
+  - name: lal
+    cmd: "ls -lahF | less"
+    desc: "List all detailed with paging"
+
+  - name: lusers
+    cmd: "cat /etc/passwd"
+    desc: "List users"
+
+  - name: lusb
+    cmd: "lsusb"
+    desc: "List USB devices"
+
+  - name: lblk
+    cmd: "sudo blkid"
+    desc: "List block devices (sudo)"
+
+  - name: lserial
+    cmd: "dmesg | grep tty"
+    desc: "List serial devices via dmesg"
+
+  - name: lsserial
+    cmd: "ll /dev/serial/by-id/"
+    desc: "List serial devices by id"
+
+  - name: ldrives
+    cmd: "lsblk"
+    desc: "List drives/volumes"
+
+  - name: lapps
+    cmd: "dpkg -l"
+    desc: "List installed applications (dpkg)"
+
+  - name: lserv
+    cmd: "service --status-all"
+    desc: "List services status"
+
+  - name: h
+    cmd: "history | less"
+    desc: "View history"
+
+  - name: lalias
+    cmd: "cat ~/.bash_aliascore | less"
+    desc: "List aliases"
+
+  - name: charmap
+    cmd: "gucharmap"
+    desc: "Launch character map"
+
+  - name: lssh
+    cmd: "if [ -n \"$1\" ]; then cat $HOME/.ssh/config | grep -A 4 $1; else cat $HOME/.ssh/config; fi;"
+    desc: "List SSH config or grep for specific host"
+    args:
+      - name: "Host Search"
+        default: ""
+
+  - name: lcpu
+    cmd: "lscpu"
+    desc: "Show CPU hardware information"
+
+  - name: lx
+    cmd: "exa -hgl"
+    desc: "Exa list"
+
+  - name: lxd
+    cmd: "exa -hglT --level $1"
+    desc: "Exa tree list with level"
+    args:
+      - name: "Level"
+        default: 1
+
+  - name: limg
+    cmd: "fdisk -l"
+    desc: "List partition info for an image file"
+
+  - name: lmnt
+    cmd: "findmnt -t nfs,cifs,ext4,fat,fat32"
+    desc: "List mounts (nfs, cifs, ext4, fat)"
+
+Users & Groups:
+  - name: root
+    cmd: "sudo su -"
+    desc: "Switch to root user"
+
+  - name: addusertogroup
+    cmd: "sudo usermod -a -G $2 $1"
+    desc: "Add user to a group"
+    args:
+      - name: "User"
+      - name: "Group"
+
+  - name: deleuserfromgroup
+    cmd: "sudo gpasswd -d $1 $2"
+    desc: "Delete user from a group"
+    args:
+      - name: "User"
+      - name: "Group"
+
+System Information:
+  - name: systeminfo
+    cmd: "echo -n \"Kernel: \"; uname -r; lsb_release -a;"
+    desc: "Show kernel and release info"
+
+  - name: cpuinfo
+    cmd: "lscpu"
+    desc: "Show CPU info"
+
+  - name: osinfo
+    cmd: "cat /etc/os-release"
+    desc: "Show OS info"
+
+  - name: meminfo
+    cmd: "free -m -l -t"
+    desc: "Show memory info"
+
+  - name: df
+    cmd: "pydf"
+    desc: "List file system volumes (colorized)"
+
+  - name: dirsize
+    cmd: "du -sh 2> >(grep -v \"Permission denied\")"
+    desc: "Get directory size (current or passed dir)"
+
+  - name: dirscan
+    cmd: "du -h -d 1 2> >(grep -v \"Permission denied\")"
+    desc: "Scan directory sizes depth 1"
+
+  - name: dirscantop
+    cmd: "du -h --max-depth=1 2> >(grep -v \"Permission denied\") | sort -rh"
+    desc: "Sort directory by max size"
+
+  - name: dirnav
+    cmd: "ncdu"
+    desc: "Navigate directory sizes (ncdu)"
+
+  - name: sudodirsize
+    cmd: "sudo du -sh"
+    desc: "Get directory size (sudo)"
+
+  - name: vols
+    cmd: "lsblk"
+    desc: "List volumes"
+
+  - name: memhogs
+    cmd: "top -l 1 -o rsize -n 10"
+    desc: "Find memory hogs"
+
+  - name: cpuhogs
+    cmd: "ps wwaxr -o pid,stat,%cpu,time,command | head -10"
+    desc: "Find CPU hogs"
+
+  - name: randpw
+    cmd: "< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c$1;echo;"
+    desc: "Generate random password"
+    args:
+      - name: "Length"
+        default: 16
+
+  - name: cputemp
+    cmd: "myvar=$(cat /sys/class/thermal/thermal_zone0/temp | bc); echo 'cpuTemp= '$((myvar / 1000))'C; '$((myvar * 18 / 10000 + 32))'F'"
+    desc: "Show CPU temperature"
+
+Modify Files/Dirs:
+  - name: mkcd
+    cmd: "test -d \"$1\" || mkdir \"$1\" && cd \"$1\""
+    desc: "Make a directory and cd to it"
+    args:
+      - name: "Directory Name"
+
+  - name: chmod_files
+    cmd: "find \"$1\" -type f -print0 | xargs -0 chmod $2"
+    desc: "Chmod files without affecting directories"
+    args:
+      - name: "Directory"
+      - name: "Permissions"
+        default: 644
+
+  - name: chmod_dirs
+    cmd: "find \"$1\" -type d -print0 | xargs -0 chmod $2"
+    desc: "Chmod directories without affecting files"
+    args:
+      - name: "Directory"
+      - name: "Permissions"
+        default: 755
+
+  - name: tardir
+    cmd: "tar -zcvf $1.tar.gz $1/"
+    desc: "Compress directory into gzip"
+    args:
+      - name: "Directory Path"
+
+  - name: zipdir
+    cmd: "zip $1.zip $1/"
+    desc: "Compress directory into zip"
+    args:
+      - name: "Directory Path"
+
+  - name: untar
+    cmd: "tar -zxvf"
+    desc: "Uncompress tar file"
+
+  - name: fixtrash
+    cmd: "rm $HOME/.local/share/Trash/metadata"
+    desc: "Fix trash is full problem"
+
+  - name: syncfiles
+    cmd: "rsync -azvu"
+    desc: "Rsync files (archive, verbose, update)"
+
+  - name: syncfiles-test
+    cmd: "backup --dry-run"
+    desc: "Rsync dry run"
+
+  - name: emptyfile
+    cmd: "cat /dev/null > "
+    desc: "Empty a file"
+
+  - name: forceumount
+    cmd: "sudo fuser -k -M $1; sudo umount $1"
+    desc: "Force unmount a volume"
+    args:
+      - name: "Mount Point"
+
+Network Stuff:
+  - name: lsip
+    cmd: "sudo arp-scan 192.168.0.1/24"
+    desc: "Full arp scan"
+
+  - name: lip
+    cmd: "arp -a"
+    desc: "Fast arp"
+
+  - name: lnet
+    cmd: "sudo nmap 192.168.0.0/24"
+    desc: "Nmap scan"
+
+  - name: lavahi
+    cmd: "avahi-browse --all"
+    desc: "List network devices with avahi names"
+
+  - name: ping
+    cmd: "ping -a -c 4 $1"
+    desc: "Ping 4 times"
+    args:
+      - name: "Host or IP"
+
+  - name: pingg
+    cmd: "ping google.com"
+    desc: "Ping Google"
+
+  - name: pingn
+    cmd: "ping 192.168.0.1"
+    desc: "Ping Gateway"
+
+  - name: myip
+    cmd: "dig +short myip.opendns.com @resolver1.opendns.com"
+    desc: "Get external IP via OpenDNS"
+
+  - name: ports
+    cmd: "netstat -tulanp"
+    desc: "Show open ports"
+
+  - name: ehosts
+    cmd: "sudo nano /etc/hosts"
+    desc: "Edit hosts file"
+
+  - name: killpythonsocket
+    cmd: "sudo lsof -i :\"$1\" | grep \"python\" | cut -d \" \" -f3 | xargs kill -9"
+    desc: "Close python socket on specific port"
+    args:
+      - name: "Port Number"
+
+  - name: lwifi
+    cmd: "nmcli dev wifi"
+    desc: "List wifi networks"
+
+Installing:
+  - name: aptinstall
+    cmd: "sudo apt-get install"
+    desc: "Apt install"
+
+  - name: aptremove
+    cmd: "sudo apt-get remove"
+    desc: "Apt remove"
+
+  - name: aptupdate
+    cmd: "sudo apt-get update"
+    desc: "Apt update"
+
+  - name: reconfig
+    cmd: "sudo dpkg-reconfigure"
+    desc: "Reconfigure an installed app"
+
+Image Stuff:
+  - name: webify
+    cmd: "mogrify -resize 690"
+    desc: "Resize file to < 690px"
+
+  - name: webifydir
+    cmd: "mogrify -resize 690\\> *.png"
+    desc: "Resize all pngs in dir to < 690px"
+
+SSH:
+  - name: genkey
+    cmd: "ssh-keygen -t rsa -b 4096 -C $1"
+    desc: "Generate SSH key"
+    args:
+      - name: "Comment/Email"
+
+  - name: uploadkey
+    cmd: "ssh-copy-id $1"
+    desc: "Upload SSH key to host"
+    args:
+      - name: "Host"
+
+  - name: rmkey
+    cmd: "ssh-keygen -R $1"
+    desc: "Remove known host key"
+    args:
+      - name: "Host or IP:PORT"
+
+Bash:
+  - name: bashreload
+    cmd: "source ~/.bashrc"
+    desc: "Reload bashrc"
+
+  - name: editalias
+    cmd: "nano ~/.bash_aliascore"
+    desc: "Edit this alias file"
+
+  - name: geditalias
+    cmd: "gedit ~/.bash_aliascore"
+    desc: "Edit alias file with gedit"
+
+  - name: katealias
+    cmd: "kate ~/.bash_aliascore"
+    desc: "Edit alias file with kate"
+
+  - name: editmalias
+    cmd: "nano $HOME/development/bin/fabfiles/ForServer/bash_aliases.txt"
+    desc: "Edit alias master file"
+
+  - name: updatealias
+    cmd: "$HOME/development/bin/fabfiles/ForServer/bash.py reload_aliases"
+    desc: "Run alias update script"
+
+Search Functions:
+  - name: search
+    cmd: "grep -irn --color ./ -e "
+    desc: "Search current dir (case-insensitive)"
+
+  - name: searchcase
+    cmd: "grep -rn --color ./ -e "
+    desc: "Search current dir (case-sensitive)"
+
+  - name: ff
+    cmd: "/usr/bin/find . -name \"$1\""
+    desc: "Find file by exact name"
+    args:
+      - name: "Filename"
+
+  - name: ffs
+    cmd: "/usr/bin/find . -name \"$1\"'*'"
+    desc: "Find file starting with string"
+    args:
+      - name: "Start String"
+
+  - name: ffe
+    cmd: "/usr/bin/find . -name '*'$1\""
+    desc: "Find file ending with string"
+    args:
+      - name: "End String"
+
+  - name: catlines
+    cmd: "perl -pe 's/^/$. /' \"$1\""
+    desc: "Cat file with line numbers"
+    args:
+      - name: "Filename"
+
+  - name: count_words
+    cmd: "wc -w < "
+    desc: "Count words in file"
+
+  - name: count_code
+    cmd: "cloc"
+    desc: "Count lines of code"
+
+Audio/Video Tools:
+  - name: getsong
+    cmd: "youtube-dl --extract-audio --audio-format mp3 --prefer-ffmpeg $1"
+    desc: "Download song from URL"
+    args:
+      - name: "URL"
+
+  - name: getvideo
+    cmd: "youtube-dl $1"
+    desc: "Download video from URL"
+    args:
+      - name: "URL"
+
+  - name: mergevideos
+    cmd: "for file in \"$1\"; do mkvmerge $file -o The_Frog_Prince.mkv; done;"
+    desc: "Merge video files"
+    args:
+      - name: "File Spec"
+
+  - name: convertebook
+    cmd: "ebook-convert \"$1.epub\" \"$1.mobi\""
+    desc: "Convert epub to mobi"
+    args:
+      - name: "Filename (no ext)"
+
+  - name: playavi
+    cmd: "mplayer *.avi"
+    desc: "Play avi files in current dir"
+
+  - name: vlc
+    cmd: "vlc *.avi"
+    desc: "Play avi files in VLC"
+
+  - name: playwave
+    cmd: "for i in *.wav; do mplayer \"$i\"; done"
+    desc: "Play wav files"
+
+  - name: playogg
+    cmd: "for i in *.ogg; do mplayer \"$i\"; done"
+    desc: "Play ogg files"
+
+  - name: playmp3
+    cmd: "for i in *.mp3; do mplayer \"$i\"; done"
+    desc: "Play mp3 files"
+
+  - name: nplaywave
+    cmd: "for i in /nas/multimedia/wave/*.wav; do mplayer \"$i\"; done"
+    desc: "Play NAS wav files"
+
+  - name: nplayogg
+    cmd: "for i in /nas/multimedia/ogg/*.ogg; do mplayer \"$i\"; done"
+    desc: "Play NAS ogg files"
+
+  - name: nplaymp3
+    cmd: "for i in /nas/multimedia/mp3/*.mp3; do mplayer \"$i\"; done"
+    desc: "Play NAS mp3 files"
+
+  - name: music
+    cmd: "mplayer --shuffle *"
+    desc: "Shuffle music in current dir"
+
+Web Tools:
+  - name: analyze_page
+    cmd: "/usr/bin/curl $1 -o /dev/null -w \"dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\\n\""
+    desc: "Analyze web page load time stats"
+    args:
+      - name: "URL"
+
+  - name: header
+    cmd: "curl -I"
+    desc: "Get website header"
+
+  - name: page_load_time
+    cmd: "ab -n $(( 10*${2:-5} )) -c ${2:-5} $1/"
+    desc: "Apache bench page load time"
+    args:
+      - name: "URL"
+      - name: "Concurrency"
+        default: 5
+
+OS Stuff:
+  - name: ddcopy
+    cmd: "dd bs=4M if=$1 | pv --size=4000m | sudo dd of=$2"
+    desc: "DD Copy with progress"
+    args:
+      - name: "Input File"
+      - name: "Output File"
+
+  - name: ddbackup
+    cmd: "sudo dd bs=4M if=$1 | pv --size=4000m | dd of=$2"
+    desc: "DD Backup with progress"
+    args:
+      - name: "Input File"
+      - name: "Output File"
+
+  - name: rsync_os
+    cmd: "sudo rsync -aAXvP --exclude={\"/dev/*\",\"/proc/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\",\"/etc/sysconfig/network-scripts/*\",\"/etc/network/interfaces\"} $1:/* /"
+    desc: "Rsync OS from remote server"
+    args:
+      - name: "Source Server"
+
+Virtualenv:
+  - name: workon
+    cmd: "source ${1:-env}/bin/activate"
+    desc: "Activate virtualenv"
+    args:
+      - name: "Env Name"
+        default: "env"
+
+  - name: workoff
+    cmd: "deactivate"
+    desc: "Deactivate virtualenv"
+
+Docker Aliases:
+  - name: dkip
+    cmd: "docker inspect --format '{{ .NetworkSettings.IPAddress }}'"
+    desc: "Get Docker IP"
+
+  - name: dkrmall
+    cmd: "docker rm $(docker ps -q -a)"
+    desc: "Remove all docker containers"
+
+  - name: dkrd
+    cmd: "docker run -d"
+    desc: "Docker run detached"
+
+  - name: dkri
+    cmd: "docker run -t -i"
+    desc: "Docker run interactive"
+
+  - name: dklc
+    cmd: "docker ps -a"
+    desc: "List all containers"
+
+  - name: dklrc
+    cmd: "docker ps"
+    desc: "List running containers"
+
+  - name: dkps
+    cmd: "docker ps"
+    desc: "List running containers"
+
+  - name: dkli
+    cmd: "docker images"
+    desc: "List images"
+
+  - name: dkrmi
+    cmd: "docker rmi"
+    desc: "Remove image"
+
+  - name: dkrmc
+    cmd: "docker rm"
+    desc: "Remove container"
+
+  - name: dkrmi_none
+    cmd: "docker rmi $(docker images | grep \"^<none>\" | awk \"{print $3}\")"
+    desc: "Remove all unidentified images"
+
+  - name: dkrmc_all
+    cmd: "docker rm $(docker ps -a -q)"
+    desc: "Remove all non-running containers"
+
+  - name: dksh
+    cmd: "docker exec -it $1 /bin/sh"
+    desc: "Attach sh to container"
+    args:
+      - name: "Container"
+
+  - name: dkbash
+    cmd: "docker exec -it $1 /bin/bash"
+    desc: "Attach bash to container"
+    args:
+      - name: "Container"
+
+  - name: dkattach
+    cmd: "docker attach --sig-proxy=false $1"
+    desc: "Attach without quitting on Ctrl-C"
+    args:
+      - name: "Container"
+
+  - name: dkrestart
+    cmd: "docker restart $1"
+    desc: "Restart container"
+    args:
+      - name: "Container"
+
+  - name: dkstop
+    cmd: "docker stop $1"
+    desc: "Stop container"
+    args:
+      - name: "Container"
+
+  - name: dc
+    cmd: "docker-compose"
+    desc: "Docker Compose"
+
+Wordpress Stuff:
+  - name: getWP
+    cmd: "wget http://wordpress.org/latest.tar.gz; tar -xzvf latest.tar.gz; rm latest.tar.gz"
+    desc: "Download and extract latest Wordpress"
+
+  - name: wp_config_user
+    cmd: "sed -i 's/<USER>/\"$1\"/g' wp-config.php"
+    desc: "Configure admin user for wordpress"
+    args:
+      - name: "Username"
+
+  - name: wp_config_salt
+    cmd: "curl http://api.wordpress.org/secret-key/1.1/salt/ > salt.txt; sed -i -e '/<SALT>/r salt.txt'  -e 's/<SALT>//' wp-config.php; rm salt.txt"
+    desc: "Add salt keys to wp_config"
+
+  - name: wp_config_dbuser
+    cmd: "sed -i 's/<DBUSER>/\"$1\"/g' wp-config.php"
+    desc: "Configure DB user for wordpress"
+    args:
+      - name: "Username"
+
+Logstalgia:
+  - name: logpong
+    cmd: "ssh $1 tail -f /var/www/$2/logs/access.log | logstalgia --sync"
+    desc: "Logstalgia for website"
+    args:
+      - name: "Host (user@ip)"
+      - name: "Sitename"
+
+  - name: logposts
+    cmd: "ssh $1 tail -f /var/www/$2/logs/access.log | grep 'GET /20'"
+    desc: "Tail posts for website"
+    args:
+      - name: "Host (user@ip)"
+      - name: "Sitename"
+
+  - name: logpongwpms
+    cmd: "ssh $1 tail -f /var/www/$2/logs/www.$2.$3-access.log | logstalgia --sync"
+    desc: "Logstalgia for WP Multisite"
+    args:
+      - name: "Host"
+      - name: "Sitename"
+      - name: "TLD"
+
+  - name: logpostswpms
+    cmd: "ssh $1 tail -f /var/www/$2/logs/www.$2.$3-access.log | grep 'GET /20'"
+    desc: "Tail posts for WP Multisite"
+    args:
+      - name: "Host"
+      - name: "Sitename"
+      - name: "TLD"
+
+Screen Aliases:
+  - name: lscreen
+    cmd: "screen -ls"
+    desc: "List screens"
+
+  - name: newscreen
+    cmd: "screen -S"
+    desc: "Start new named screen"
+
+  - name: rscreen
+    cmd: "screen -r"
+    desc: "Reattach screen"
+
+  - name: killscreen
+    cmd: "screen -X -S $1 quit"
+    desc: "Kill named screen"
+    args:
+      - name: "Screen Name"
+
+Clipboard Tools:
+  - name: clipfile
+    cmd: "xclip -sel c < $1"
+    desc: "Copy file contents to clipboard"
+    args:
+      - name: "Filename"
