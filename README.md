@@ -4,8 +4,8 @@
 This project provides a unified system for managing, organizing, and executing complex shell commands. Instead of maintaining a messy `.bashrc` or remembering obscure command flags, you define your commands once in a structured **YAML** file.
 
 This "Source of Truth" drives two interfaces:
-1.  **Interactive Menu (`menu_runner.py`):** A visual, scrollable terminal window to browse commands, input arguments (with defaults/dropdowns), and execute them immediately.
-2.  **Native Shell Aliases (`generate_bash.py`):** A generator that converts your YAML config into a standard `.bash_aliases` file for native shell usage.
+1.  **Interactive Menu (`commander.py`):** A visual, scrollable terminal window to browse commands, input arguments (with defaults/dropdowns), and execute them immediately.
+2.  **Native Shell Aliases (`generate_alias_file.py`):** A generator that converts your YAML config into a standard `.bash_aliases` file for native shell usage.
 
 ## File Structure & Purpose
 
@@ -40,7 +40,7 @@ Network Stuff:
 ```
 In this example, "Personal" would be a new category, while "ping_home" would be added to the existing "Network Stuff" category.
 
-### 2. `menu_runner.py` (The Interactive UI)
+### 2. `commander.py` (The Interactive UI)
 A Python script utilizing `simple-term-menu` to create a "window-like" experience inside the terminal.
 
 **Key Functions:**
@@ -51,7 +51,7 @@ A Python script utilizing `simple-term-menu` to create a "window-like" experienc
     *   If neither: Forces the user to type input.
 *   **Clean Output:** Uses ANSI escape codes to erase prompts after entry, keeping the terminal history clean.
 
-### 3. `generate_bash.py` (The Alias Generator)
+### 3. `generate_alias_file.py` (The Alias Generator)
 A utility script that parses `commands.yaml` and exports a standard Bash alias file.
 
 **Operation:**
@@ -112,15 +112,46 @@ pip install pyyaml simple-term-menu
 *Note: `simple-term-menu` supports Linux and macOS only.*
 
 ### 2. Running the Menu
+
+#### Interactive Mode (Default)
 To launch the interactive window:
 ```bash
-python menu_runner.py
+python commander.py
+```
+
+#### Direct Command Execution
+You can also run commands directly without the menu:
+```bash
+# Run a command by name (will prompt for any required arguments)
+python commander.py ipaddr
+
+# Provide all arguments on the command line (no prompts)
+python commander.py ping google.com
+
+# Provide some arguments (will prompt for missing ones)
+python commander.py ddcopy /dev/sda1
+# (will then prompt for "Output File")
+```
+
+#### Continuous Mode
+Add the `-c` or `--continuous` flag to stay in interactive mode after command execution:
+```bash
+# Interactive menu with continuous mode
+python commander.py -c
+
+# Direct command with continuous mode
+python commander.py -c ping 8.8.8.8
+```
+
+**Command Line Syntax:**
+```bash
+python commander.py [-c] [command_name] [arg1] [arg2] ...
 ```
 
 ### 3. Generating Bash Aliases
 To update your native shell aliases after editing the YAML:
 ```bash
-python generate_bash.py
+python generate_alias_file.py
 ```
 Then, ensure your shell loads the generated file (e.g., add `source /path/to/.bash_aliases_generated` to your `.bashrc`).
 
@@ -134,7 +165,7 @@ Then, ensure your shell loads the generated file (e.g., add `source /path/to/.ba
        +-------------------------+
        |                         |
        v                         v
-[ menu_runner.py ]      [ generate_bash.py ]
+[ commander.py ]      [ generate_alias_file.py ]
        |                         |
        v                         v
   Interactive           [ .bash_aliases_gen ]

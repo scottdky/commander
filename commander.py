@@ -89,24 +89,30 @@ def get_argument_value(argConfig: dict) -> str:
 
     return val
 
-def run_command(cmdTemplate: str, argsConfig: list, continuous: bool):
+def run_command(cmdTemplate: str, argsConfig: list, continuous: bool, preSuppliedArgs: list = None):
     """Collect command arguments from user via prompts, and run the bash command.
 
     Args:
         cmdTemplate (str): command string with $1, $2, etc. placeholders
         argsConfig (list): list of argument configurations, each a dict with keys like 'name', 'default', 'choices'
         continuous (bool): whether to keep running after command execution to run more commands
+        preSuppliedArgs (list): optional list of arguments supplied via CLI (will prompt for missing ones)
 
     Returns:
         None
     """
     finalCmd = cmdTemplate
     collectedArgs = []
+    preSuppliedArgs = preSuppliedArgs or []
 
     # 1. Collect Arguments
     if argsConfig:
         for i, arg in enumerate(argsConfig, 1):
-            val = get_argument_value(arg)
+            # Use pre-supplied argument if available, otherwise prompt
+            if i - 1 < len(preSuppliedArgs):
+                val = preSuppliedArgs[i - 1]
+            else:
+                val = get_argument_value(arg)
 
             if val is None:
                 return # User cancelled
@@ -135,6 +141,23 @@ def run_command(cmdTemplate: str, argsConfig: list, continuous: bool):
         print("\nCommand execution completed.")
         sys.exit(0)
 
+def find_command_by_name(data: dict, command_name: str):
+    """
+    Search for a command by name across all categories.
+
+    Args:
+        data (dict): The commands data structure
+        command_name (str): The name of the command to find
+
+    Returns:
+        dict or None: The command dict if found, None otherwise
+    """
+    for category, commands in data.items():
+        for cmd in commands:
+            if cmd['name'] == command_name:
+                return cmd
+    return None
+
 def main():
     """
     Run the commander program. Supports continuous interactive mode or single command mode.
@@ -143,9 +166,15 @@ def main():
     parser = argparse.ArgumentParser(description='Terminal Command Menu & Alias Manager')
     parser.add_argument('-c', '--continuous', action='store_true',
                         help='Run in continuous interactive mode (default: single command mode)')
+    parser.add_argument('command', nargs='?', default=None,
+                        help='Command name to execute directly without menu')
+    parser.add_argument('cmdargs', nargs='*',
+                        help='Arguments for the command')
     args = parser.parse_args()
 
     continuousMode = args.continuous
+    directCommand = args.command
+    commandArgs = args.cmdargs
 
     # Load commands.yaml
     try:
@@ -175,6 +204,21 @@ def main():
     except KeyboardInterrupt:
         print("\nExiting...")
         sys.exit(0)
+
+    # If a direct command was specified, execute it and exit
+    if directCommand:
+        cmd = find_command_by_name(data, directCommand)
+        if cmd:
+            run_command(cmd['cmd'], cmd.get('args', []), False, commandArgs)
+        else:
+            print(f"Error: Command '{directCommand}' not found.")
+            print("\nAvailable commands:")
+            for category, commands in data.items():
+                print(f"\n{category}:")
+                for c in commands:
+                    print(f"  - {c['name']}: {c.get('desc', '')}")
+            sys.exit(1)
+        return
 
     categories = list(data.keys()) + ["Exit"]
 

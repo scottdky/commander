@@ -3,34 +3,60 @@ General:
     cmd: "cd .."
     desc: "Go up one directory"
 
+  - name: ...
+    cmd: "cd ../.."
+    desc: "Go up two directories"
+
+  - name: ....
+    cmd: "cd ../../.."
+    desc: "Go up three directories"
+
   - name: rm
-    cmd: "rm -I --preserve-root"
+    cmd: "rm -I --preserve-root $1"
     desc: "Do not delete / or prompt if deleting more than 3 files"
+    args:
+      - name: "File or Path"
 
   - name: chown
-    cmd: "chown --preserve-root"
+    cmd: "chown --preserve-root $1 $2"
     desc: "Parenting changing perms on /"
+    args:
+      - name: "User:Group"
+      - name: "File or Path"
 
   - name: chmod
-    cmd: "chmod --preserve-root"
+    cmd: "chmod --preserve-root $1 $2"
     desc: "Parenting changing perms on /"
+    args:
+      - name: "Permissions"
+      - name: "File or Path"
 
   - name: chgrp
-    cmd: "chgrp --preserve-root"
+    cmd: "chgrp --preserve-root $1 $2"
     desc: "Parenting changing perms on /"
+    args:
+      - name: "Group"
+      - name: "File or Path"
 
   - name: wget
-    cmd: "wget -c"
+    cmd: "wget -c $1"
     desc: "Resume wget by default"
+    args:
+      - name: "URL"
 
   - name: nano
-    cmd: "nano --linenumbers -cmET 4"
+    cmd: "nano --linenumbers -cmET 4 $1"
     desc: "Nano with line numbers, mouse, and tabs"
+    args:
+      - name: "File"
+        default: ""
 
 Pet Snippets:
   - name: prun
     cmd: "pet exec"
     desc: "Execute pet snippet"
+    args:
+      - name: "Snippet Name"
 
   - name: pconf
     cmd: "pet configure"
@@ -168,24 +194,39 @@ System Information:
     desc: "List file system volumes (colorized)"
 
   - name: dirsize
-    cmd: "du -sh 2> >(grep -v \"Permission denied\")"
+    cmd: "du -sh $1 2> >(grep -v \"Permission denied\")"
     desc: "Get directory size (current or passed dir)"
+    args:
+      - name: "Directory"
+        default: "."
 
   - name: dirscan
-    cmd: "du -h -d 1 2> >(grep -v \"Permission denied\")"
+    cmd: "du -h -d 1 $1 2> >(grep -v \"Permission denied\")"
     desc: "Scan directory sizes depth 1"
+    args:
+      - name: "Directory"
+        default: "."
 
   - name: dirscantop
-    cmd: "du -h --max-depth=1 2> >(grep -v \"Permission denied\") | sort -rh"
+    cmd: "du -h --max-depth=1 $1 2> >(grep -v \"Permission denied\") | sort -rh"
     desc: "Sort directory by max size"
+    args:
+      - name: "Directory"
+        default: "."
 
   - name: dirnav
-    cmd: "ncdu"
+    cmd: "ncdu $1"
     desc: "Navigate directory sizes (ncdu)"
+    args:
+      - name: "Directory"
+        default: "."
 
   - name: sudodirsize
-    cmd: "sudo du -sh"
+    cmd: "sudo du -sh $1"
     desc: "Get directory size (sudo)"
+    args:
+      - name: "Directory"
+        default: "."
 
   - name: vols
     cmd: "lsblk"
@@ -246,24 +287,31 @@ Modify Files/Dirs:
       - name: "Directory Path"
 
   - name: untar
-    cmd: "tar -zxvf"
+    cmd: "tar -zxvf $1"
     desc: "Uncompress tar file"
+    args:
+      - name: "Tar File"
 
   - name: fixtrash
     cmd: "rm $HOME/.local/share/Trash/metadata"
     desc: "Fix trash is full problem"
 
   - name: syncfiles
-    cmd: "rsync -azvu"
+    cmd: "rsync -azvu $1 $2"
     desc: "Rsync files (archive, verbose, update)"
+    args:
+      - name: "Source"
+      - name: "Destination"
 
   - name: syncfiles-test
     cmd: "backup --dry-run"
     desc: "Rsync dry run"
 
   - name: emptyfile
-    cmd: "cat /dev/null > "
+    cmd: "cat /dev/null > $1"
     desc: "Empty a file"
+    args:
+      - name: "Filename"
 
   - name: forceumount
     cmd: "sudo fuser -k -M $1; sudo umount $1"
@@ -272,11 +320,34 @@ Modify Files/Dirs:
       - name: "Mount Point"
 
 Network Stuff:
-  - name: lsip
+  - name: lip
+    cmd: 'ip -4 -o addr show | grep -E "eth|wlan|en|wl" | awk "{print $2, $4}" | sed "s/\/.*//"'
+    desc: "List just wired and wireless IP addresses"
+
+  - name: ipaddr
+    cmd: "ip -4 addr"
+    desc: "Show all IP addresses (replaces ifconfig)"
+
+  - name: iplink
+    cmd: "ip link show"
+    desc: "Show network interfaces"
+
+  - name: iproute
+    cmd: "ip route show"
+    desc: "Show routing table"
+
+  - name: ipshow
+    cmd: "ip addr show $1"
+    desc: "Show specific interface details"
+    args:
+      - name: "Interface"
+        default: ""
+
+  - name: ipscan
     cmd: "sudo arp-scan 192.168.0.1/24"
     desc: "Full arp scan"
 
-  - name: lip
+  - name: fastipscan
     cmd: "arp -a"
     desc: "Fast arp"
 
@@ -326,25 +397,33 @@ Network Stuff:
 
 Installing:
   - name: aptinstall
-    cmd: "sudo apt-get install"
+    cmd: "sudo apt-get install $1"
     desc: "Apt install"
+    args:
+      - name: "Package Name"
 
   - name: aptremove
-    cmd: "sudo apt-get remove"
+    cmd: "sudo apt-get remove $1"
     desc: "Apt remove"
+    args:
+      - name: "Package Name"
 
   - name: aptupdate
     cmd: "sudo apt-get update"
     desc: "Apt update"
 
   - name: reconfig
-    cmd: "sudo dpkg-reconfigure"
+    cmd: "sudo dpkg-reconfigure $1"
     desc: "Reconfigure an installed app"
+    args:
+      - name: "Package Name"
 
 Image Stuff:
   - name: webify
-    cmd: "mogrify -resize 690"
+    cmd: "mogrify -resize 690 $1"
     desc: "Resize file to < 690px"
+    args:
+      - name: "Filename"
 
   - name: webifydir
     cmd: "mogrify -resize 690\\> *.png"
@@ -396,27 +475,31 @@ Bash:
 
 Search Functions:
   - name: search
-    cmd: "grep -irn --color ./ -e "
+    cmd: "grep -irn --color ./ -e $1"
     desc: "Search current dir (case-insensitive)"
+    args:
+      - name: "Search Term"
 
   - name: searchcase
-    cmd: "grep -rn --color ./ -e "
+    cmd: "grep -rn --color ./ -e $1"
     desc: "Search current dir (case-sensitive)"
+    args:
+      - name: "Search Term"
 
   - name: ff
-    cmd: "/usr/bin/find . -name \"$1\""
-    desc: "Find file by exact name"
+    cmd: "/usr/bin/find . -name '*$1*'"
+    desc: "Find files containing string in name"
     args:
-      - name: "Filename"
+      - name: "Search String"
 
   - name: ffs
-    cmd: "/usr/bin/find . -name \"$1\"'*'"
+    cmd: "/usr/bin/find . -name \"$1*\""
     desc: "Find file starting with string"
     args:
       - name: "Start String"
 
   - name: ffe
-    cmd: "/usr/bin/find . -name '*'$1\""
+    cmd: "/usr/bin/find . -name \"*$1\""
     desc: "Find file ending with string"
     args:
       - name: "End String"
@@ -428,12 +511,17 @@ Search Functions:
       - name: "Filename"
 
   - name: count_words
-    cmd: "wc -w < "
+    cmd: "wc -w < $1"
     desc: "Count words in file"
+    args:
+      - name: "Filename"
 
   - name: count_code
-    cmd: "cloc"
+    cmd: "cloc $1"
     desc: "Count lines of code"
+    args:
+      - name: "Path"
+        default: "."
 
 Audio/Video Tools:
   - name: getsong
@@ -504,8 +592,10 @@ Web Tools:
       - name: "URL"
 
   - name: header
-    cmd: "curl -I"
+    cmd: "curl -I $1"
     desc: "Get website header"
+    args:
+      - name: "URL"
 
   - name: page_load_time
     cmd: "ab -n $(( 10*${2:-5} )) -c ${2:-5} $1/"
@@ -550,20 +640,26 @@ Virtualenv:
 
 Docker Aliases:
   - name: dkip
-    cmd: "docker inspect --format '{{ .NetworkSettings.IPAddress }}'"
+    cmd: "docker inspect --format '{{ .NetworkSettings.IPAddress }}' $1"
     desc: "Get Docker IP"
+    args:
+      - name: "Container"
 
   - name: dkrmall
     cmd: "docker rm $(docker ps -q -a)"
     desc: "Remove all docker containers"
 
   - name: dkrd
-    cmd: "docker run -d"
+    cmd: "docker run -d $1"
     desc: "Docker run detached"
+    args:
+      - name: "Image"
 
   - name: dkri
-    cmd: "docker run -t -i"
+    cmd: "docker run -t -i $1"
     desc: "Docker run interactive"
+    args:
+      - name: "Image"
 
   - name: dklc
     cmd: "docker ps -a"
@@ -582,12 +678,16 @@ Docker Aliases:
     desc: "List images"
 
   - name: dkrmi
-    cmd: "docker rmi"
+    cmd: "docker rmi $1"
     desc: "Remove image"
+    args:
+      - name: "Image"
 
   - name: dkrmc
-    cmd: "docker rm"
+    cmd: "docker rm $1"
     desc: "Remove container"
+    args:
+      - name: "Container"
 
   - name: dkrmi_none
     cmd: "docker rmi $(docker images | grep \"^<none>\" | awk \"{print $3}\")"
@@ -628,8 +728,11 @@ Docker Aliases:
       - name: "Container"
 
   - name: dc
-    cmd: "docker-compose"
+    cmd: "docker-compose $1"
     desc: "Docker Compose"
+    args:
+      - name: "Subcommand"
+        default: "up"
 
 Wordpress Stuff:
   - name: getWP
@@ -689,12 +792,17 @@ Screen Aliases:
     desc: "List screens"
 
   - name: newscreen
-    cmd: "screen -S"
+    cmd: "screen -S $1"
     desc: "Start new named screen"
+    args:
+      - name: "Screen Name"
 
   - name: rscreen
-    cmd: "screen -r"
+    cmd: "screen -r $1"
     desc: "Reattach screen"
+    args:
+      - name: "Screen Name/ID"
+        default: ""
 
   - name: killscreen
     cmd: "screen -X -S $1 quit"
