@@ -12,6 +12,7 @@ import yaml
 import subprocess
 import argparse
 from simple_term_menu import TerminalMenu
+import os
 
 def clean_input(prompt: str) -> str:
     """
@@ -158,31 +159,15 @@ def find_command_by_name(data: dict, command_name: str):
                 return cmd
     return None
 
-def main():
-    """
-    Run the commander program. Supports continuous interactive mode or single command mode.
-    """
-    # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Terminal Command Menu & Alias Manager')
-    parser.add_argument('-c', '--continuous', action='store_true',
-                        help='Run in continuous interactive mode (default: single command mode)')
-    parser.add_argument('command', nargs='?', default=None,
-                        help='Command name to execute directly without menu')
-    parser.add_argument('cmdargs', nargs='*',
-                        help='Arguments for the command')
-    args = parser.parse_args()
-
-    continuousMode = args.continuous
-    directCommand = args.command
-    commandArgs = args.cmdargs
-
+def load_commands():
+    """Load commands from YAML files."""
     # Load commands.yaml
     try:
         with open("commands.yaml", 'r') as f:
             data = yaml.safe_load(f)
     except FileNotFoundError:
         print("Error: commands.yaml not found.")
-        return
+        return {}
     except KeyboardInterrupt:
         print("\nExiting...")
         sys.exit(0)
@@ -204,6 +189,158 @@ def main():
     except KeyboardInterrupt:
         print("\nExiting...")
         sys.exit(0)
+
+    return data
+
+def generate_bash_completion():
+    """Generate bash completion script"""
+    commands = []
+    for category_data in load_commands().values():
+        commands.extend([cmd['name'] for cmd in category_data])
+
+    completion_script = f"""# Bash completion for commander.py
+_commander_completions() {{
+    local cur="${{COMP_WORDS[COMP_CWORD]}}"
+
+    if [ $COMP_CWORD -eq 1 ]; then
+        COMPREPLY=( $(compgen -W "{' '.join(commands)}" -- ${{cur}}) )
+        return 0
+    fi
+}}
+
+complete -F _commander_completions commander.py
+complete -F _commander_completions ./commander.py
+"""
+
+    completion_file = os.path.join(os.path.expanduser('~'), '.commander-completion.bash')
+    with open(completion_file, 'w') as f:
+        f.write(completion_script)
+
+    print(f"Bash completion script generated: {completion_file}")
+    print(f"\nTo enable completion, add this line to ~/.bashrc:")
+    print(f"  source ~/.commander-completion.bash")
+    print(f"\nThen reload: source ~/.bashrc")
+    print(f"\nTo update completions after adding commands, re-run this and then:")
+    print(f"  source ~/.commander-completion.bash  (or open a new terminal)")
+
+def generate_bash_aliases():
+    """Generate bash aliases file"""
+    import re
+
+    data = load_commands()
+    alias_file = os.path.join(os.path.expanduser('~'), '.bash_aliascore')
+
+    # First pass: collect all function names that might conflict
+    functions_to_unalias = []
+    for category, items in data.items():
+        for item in items:
+            name = item['name']
+            cmd = item['cmd']
+            cmd_type = item.get('type')
+            if not cmd_type:
+                if re.search(r'\$\d+', cmd):
+                    cmd_type = 'function'
+                else:
+                    cmd_type = 'alias'
+            if cmd_type == 'function':
+                functions_to_unalias.append(name)
+
+    with open(alias_file, 'w') as out:
+        out.write("# AUTO-GENERATED FILE. DO NOT EDIT DIRECTLY.\n")
+        out.write("# Edit commands.yaml or custom.yaml instead.\n\n")
+
+        # Unalias all functions at the top to avoid conflicts
+        if functions_to_unalias:
+            out.write("# Remove any existing aliases that would conflict with functions\n")
+            for func_name in functions_to_unalias:
+                out.write(f"unalias {func_name} 2>/dev/null || true\n")
+            out.write("\n")
+
+        for category, items in data.items():
+            out.write(f"\n#* {category}\n")
+
+            for item in items:
+                name = item['name']
+                cmd = item['cmd']
+                desc = item.get('desc', '')
+
+                # Auto-detect type: if command has $1, $2, etc., it's a function
+                cmd_type = item.get('type')
+                if not cmd_type:
+                    # Check if command uses positional parameters
+                    if re.search(r'\$\d+', cmd):
+                        cmd_type = 'function'
+                    else:
+                        cmd_type = 'alias'
+
+                # Format description as inline comment
+                desc_suffix = f'  # {desc}' if desc else ''
+
+                if cmd_type == 'alias':
+                    # Escape single quotes in command for bash alias
+                    cmd_escaped = cmd.replace("'", "'\"'\"'")
+                    out.write(f"alias {name}='{cmd_escaped}'{desc_suffix}\n")
+                elif cmd_type == 'function':
+                    # Strip trailing semicolon to avoid double semicolon in function
+                    cmd_cleaned = cmd.rstrip(';').rstrip()
+                    out.write(f"{name}() {{ {cmd_cleaned}; }}{desc_suffix}\n")
+
+    print(f"Bash aliases file generated: {alias_file}")
+    print(f"\nTo enable aliases, add this line to ~/.bashrc:")
+    print(f"  source ~/.bash_aliascore")
+    print(f"\nThen reload: source ~/.bashrc")
+    print(f"\nTo update aliases after adding commands, re-run this and then:")
+    print(f"  source ~/.bash_aliascore  (or open a new terminal)")
+
+def generate_all():
+    """Generate both bash completion and aliases"""
+    print("=== Generating Bash Completion ===")
+    generate_bash_completion()
+    print("\n=== Generating Bash Aliases ===")
+    generate_bash_aliases()
+    print("\n=== Done! ===")
+    print("\nAdd these lines to ~/.bashrc:")
+    print("  source ~/.commander-completion.bash")
+    print("  source ~/.bash_aliascore")
+    print("\nThen reload: source ~/.bashrc")
+
+def main():
+    """
+    Run the commander program. Supports continuous interactive mode or single command mode.
+    """
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Terminal Command Menu & Alias Manager')
+    parser.add_argument('-c', '--continuous', action='store_true',
+                        help='Run in continuous interactive mode (default: single command mode)')
+    parser.add_argument('command', nargs='?', default=None,
+                        help='Command name to execute directly without menu')
+    parser.add_argument('cmdargs', nargs='*',
+                        help='Arguments for the command')
+    parser.add_argument('--generate-completion', action='store_true',
+                        help='Generate bash completion script')
+    parser.add_argument('--generate-aliases', action='store_true',
+                        help='Generate bash aliases file')
+    parser.add_argument('--generate-all', action='store_true',
+                        help='Generate both completion script and aliases file')
+    args = parser.parse_args()
+
+    continuousMode = args.continuous
+    directCommand = args.command
+    commandArgs = args.cmdargs
+
+    if args.generate_completion:
+        generate_bash_completion()
+        sys.exit(0)
+
+    if args.generate_aliases:
+        generate_bash_aliases()
+        sys.exit(0)
+
+    if args.generate_all:
+        generate_all()
+        sys.exit(0)
+
+    data = load_commands()
 
     # If a direct command was specified, execute it and exit
     if directCommand:

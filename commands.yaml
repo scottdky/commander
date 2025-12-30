@@ -12,27 +12,27 @@ General:
     desc: "Go up three directories"
 
   - name: rm
-    cmd: "rm -I --preserve-root $1"
+    cmd: "/bin/rm -I --preserve-root $1"
     desc: "Do not delete / or prompt if deleting more than 3 files"
     args:
       - name: "File or Path"
 
   - name: chown
-    cmd: "chown --preserve-root $1 $2"
+    cmd: "/bin/chown --preserve-root $1 $2"
     desc: "Parenting changing perms on /"
     args:
       - name: "User:Group"
       - name: "File or Path"
 
   - name: chmod
-    cmd: "chmod --preserve-root $1 $2"
+    cmd: "/bin/chmod --preserve-root $1 $2"
     desc: "Parenting changing perms on /"
     args:
       - name: "Permissions"
       - name: "File or Path"
 
   - name: chgrp
-    cmd: "chgrp --preserve-root $1 $2"
+    cmd: "/bin/chgrp --preserve-root $1 $2"
     desc: "Parenting changing perms on /"
     args:
       - name: "Group"
@@ -248,7 +248,7 @@ System Information:
         default: 16
 
   - name: cputemp
-    cmd: "myvar=$(cat /sys/class/thermal/thermal_zone0/temp | bc); echo 'cpuTemp= '$((myvar / 1000))'C; '$((myvar * 18 / 10000 + 32))'F'"
+    cmd: 'myvar=$(cat /sys/class/thermal/thermal_zone0/temp | bc); echo "cpuTemp= $((myvar / 1000))C; $((myvar * 18 / 10000 + 32))F"'
     desc: "Show CPU temperature"
 
 Modify Files/Dirs:

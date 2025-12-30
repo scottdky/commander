@@ -148,12 +148,100 @@ python commander.py -c ping 8.8.8.8
 python commander.py [-c] [command_name] [arg1] [arg2] ...
 ```
 
-### 3. Generating Bash Aliases
-To update your native shell aliases after editing the YAML:
+### 3. Bash Tab Completion (Optional but Recommended)
+
+Enable tab completion for command names to speed up command execution:
+
+#### Generate the completion script:
 ```bash
-python generate_alias_file.py
+python commander.py --generate-completion
 ```
-Then, ensure your shell loads the generated file (e.g., add `source /path/to/.bash_aliases_generated` to your `.bashrc`).
+
+This creates `~/.commander-completion.bash` in your home directory. The script includes all commands from both `commands.yaml` and `custom.yaml`.
+
+#### Enable completion in your shell (one-time setup):
+Add this line to your `~/.bashrc`:
+```bash
+source ~/.commander-completion.bash
+```
+
+Then reload your bash configuration:
+```bash
+source ~/.bashrc
+```
+
+#### Usage:
+Now you can use tab completion:
+```bash
+python commander.py pi<TAB>
+# Auto-completes to: python commander.py ping
+
+python commander.py ip<TAB>
+# Shows: ipaddr  iplink  iproute  ipshow
+```
+
+#### Updating completions:
+When you add new commands to `commands.yaml` or `custom.yaml`, regenerate the completion script:
+```bash
+python commander.py --generate-completion
+```
+
+Then reload it in your current shell (or just open a new terminal):
+```bash
+source ~/.commander-completion.bash
+```
+
+### 4. Bash Aliases Generation (Optional)
+
+Generate a traditional bash aliases file from your commands:
+
+#### Generate the aliases file:
+```bash
+python commander.py --generate-aliases
+```
+
+This creates `~/.bash_aliascore` in your home directory with all commands from both `commands.yaml` and `custom.yaml`. Commands with arguments (`$1`, `$2`, etc.) are created as bash functions, while simple commands become aliases.
+
+#### Enable aliases in your shell (one-time setup):
+Add this line to your `~/.bashrc`:
+```bash
+source ~/.bash_aliascore
+```
+
+Then reload:
+```bash
+source ~/.bashrc
+```
+
+#### Usage:
+Now you can use the commands directly in your shell:
+```bash
+ll          # Lists files
+ping google.com  # Pings Google
+```
+
+#### Updating aliases:
+When you add new commands, regenerate:
+```bash
+python commander.py --generate-aliases
+source ~/.bash_aliascore  # or open a new terminal
+```
+
+### 5. Generate Everything at Once
+
+To generate both completion and aliases in one command:
+```bash
+python commander.py --generate-all
+```
+
+This will create both `~/.commander-completion.bash` and `~/.bash_aliascore`.
+
+**One-time setup:** Add both to your `~/.bashrc`:
+```bash
+source ~/.commander-completion.bash
+source ~/.bash_aliascore
+```
+
 
 ---
 
