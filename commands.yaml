@@ -124,7 +124,7 @@ List Stuff:
     desc: "Launch character map"
 
   - name: lssh
-    cmd: "if [ -n \"$1\" ]; then cat $HOME/.ssh/config | grep -A 4 $1; else cat $HOME/.ssh/config; fi;"
+    cmd: 'if [ -n "$1" ]; then cat $HOME/.ssh/config | grep -A 4 $1; else cat $HOME/.ssh/config; fi;'
     desc: "List SSH config or grep for specific host"
     args:
       - name: "Host Search"
@@ -174,7 +174,7 @@ Users & Groups:
 
 System Information:
   - name: systeminfo
-    cmd: "echo -n \"Kernel: \"; uname -r; lsb_release -a;"
+    cmd: 'echo -n "Kernel: "; uname -r; lsb_release -a;'
     desc: "Show kernel and release info"
 
   - name: cpuinfo
@@ -194,21 +194,21 @@ System Information:
     desc: "List file system volumes (colorized)"
 
   - name: dirsize
-    cmd: "du -sh $1 2> >(grep -v \"Permission denied\")"
+    cmd: 'du -sh $1 2> >(grep -v "Permission denied")'
     desc: "Get directory size (current or passed dir)"
     args:
       - name: "Directory"
         default: "."
 
   - name: dirscan
-    cmd: "du -h -d 1 $1 2> >(grep -v \"Permission denied\")"
+    cmd: 'du -h -d 1 $1 2> >(grep -v "Permission denied")'
     desc: "Scan directory sizes depth 1"
     args:
       - name: "Directory"
         default: "."
 
   - name: dirscantop
-    cmd: "du -h --max-depth=1 $1 2> >(grep -v \"Permission denied\") | sort -rh"
+    cmd: 'du -h --max-depth=1 $1 2> >(grep -v "Permission denied") | sort -rh'
     desc: "Sort directory by max size"
     args:
       - name: "Directory"
@@ -253,13 +253,13 @@ System Information:
 
 Modify Files/Dirs:
   - name: mkcd
-    cmd: "test -d \"$1\" || mkdir \"$1\" && cd \"$1\""
+    cmd: 'test -d "$1" || mkdir "$1" && cd "$1"'
     desc: "Make a directory and cd to it"
     args:
       - name: "Directory Name"
 
   - name: chmod_files
-    cmd: "find \"$1\" -type f -print0 | xargs -0 chmod $2"
+    cmd: 'find "$1" -type f -print0 | xargs -0 chmod $2'
     desc: "Chmod files without affecting directories"
     args:
       - name: "Directory"
@@ -267,7 +267,7 @@ Modify Files/Dirs:
         default: 644
 
   - name: chmod_dirs
-    cmd: "find \"$1\" -type d -print0 | xargs -0 chmod $2"
+    cmd: 'find "$1" -type d -print0 | xargs -0 chmod $2'
     desc: "Chmod directories without affecting files"
     args:
       - name: "Directory"
@@ -386,7 +386,7 @@ Network Stuff:
     desc: "Edit hosts file"
 
   - name: killpythonsocket
-    cmd: "sudo lsof -i :\"$1\" | grep \"python\" | cut -d \" \" -f3 | xargs kill -9"
+    cmd: 'sudo lsof -i :"$1" | grep "python" | cut -d " " -f3 | xargs kill -9'
     desc: "Close python socket on specific port"
     args:
       - name: "Port Number"
@@ -537,13 +537,13 @@ Audio/Video Tools:
       - name: "URL"
 
   - name: mergevideos
-    cmd: "for file in \"$1\"; do mkvmerge $file -o The_Frog_Prince.mkv; done;"
+    cmd: 'for file in "$1"; do mkvmerge $file -o The_Frog_Prince.mkv; done;'
     desc: "Merge video files"
     args:
       - name: "File Spec"
 
   - name: convertebook
-    cmd: "ebook-convert \"$1.epub\" \"$1.mobi\""
+    cmd: 'ebook-convert "$1.epub" "$1.mobi"'
     desc: "Convert epub to mobi"
     args:
       - name: "Filename (no ext)"
@@ -557,27 +557,27 @@ Audio/Video Tools:
     desc: "Play avi files in VLC"
 
   - name: playwave
-    cmd: "for i in *.wav; do mplayer \"$i\"; done"
+    cmd: 'for i in *.wav; do mplayer "$i"; done'
     desc: "Play wav files"
 
   - name: playogg
-    cmd: "for i in *.ogg; do mplayer \"$i\"; done"
+    cmd: 'for i in *.ogg; do mplayer "$i"; done'
     desc: "Play ogg files"
 
   - name: playmp3
-    cmd: "for i in *.mp3; do mplayer \"$i\"; done"
+    cmd: 'for i in *.mp3; do mplayer "$i"; done'
     desc: "Play mp3 files"
 
   - name: nplaywave
-    cmd: "for i in /nas/multimedia/wave/*.wav; do mplayer \"$i\"; done"
+    cmd: 'for i in /nas/multimedia/wave/*.wav; do mplayer "$i"; done'
     desc: "Play NAS wav files"
 
   - name: nplayogg
-    cmd: "for i in /nas/multimedia/ogg/*.ogg; do mplayer \"$i\"; done"
+    cmd: 'for i in /nas/multimedia/ogg/*.ogg; do mplayer "$i"; done'
     desc: "Play NAS ogg files"
 
   - name: nplaymp3
-    cmd: "for i in /nas/multimedia/mp3/*.mp3; do mplayer \"$i\"; done"
+    cmd: 'for i in /nas/multimedia/mp3/*.mp3; do mplayer "$i"; done'
     desc: "Play NAS mp3 files"
 
   - name: music
@@ -586,7 +586,7 @@ Audio/Video Tools:
 
 Web Tools:
   - name: analyze_page
-    cmd: "/usr/bin/curl $1 -o /dev/null -w \"dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\\n\""
+    cmd: '/usr/bin/curl $1 -o /dev/null -w "dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\n"'
     desc: "Analyze web page load time stats"
     args:
       - name: "URL"
@@ -621,7 +621,7 @@ OS Stuff:
       - name: "Output File"
 
   - name: rsync_os
-    cmd: "sudo rsync -aAXvP --exclude={\"/dev/*\",\"/proc/*\",\"/sys/*\",\"/tmp/*\",\"/run/*\",\"/mnt/*\",\"/media/*\",\"/lost+found\",\"/etc/sysconfig/network-scripts/*\",\"/etc/network/interfaces\"} $1:/* /"
+    cmd: 'sudo rsync -aAXvP --exclude={"/dev/*","/proc/*","/sys/*","/tmp/*","/run/*","/mnt/*","/media/*","/lost+found","/etc/sysconfig/network-scripts/*","/etc/network/interfaces"} $1:/* /'
     desc: "Rsync OS from remote server"
     args:
       - name: "Source Server"
@@ -690,7 +690,7 @@ Docker Aliases:
       - name: "Container"
 
   - name: dkrmi_none
-    cmd: "docker rmi $(docker images | grep \"^<none>\" | awk \"{print $3}\")"
+    cmd: 'docker rmi $(docker images | grep "^<none>" | awk "{print $3}")'
     desc: "Remove all unidentified images"
 
   - name: dkrmc_all
