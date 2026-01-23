@@ -223,10 +223,28 @@ complete -F _commander_completions ./commander.py
     print(f"\nTo update completions after adding commands, re-run this and then:")
     print(f"  source ~/.commander-completion.bash  (or open a new terminal)")
 
-def generate_bash_aliases():
-    """Generate bash aliases file"""
+def determine_command_type(cmd, explicit_type=None):
+    """Determine if a command should be a bash function or alias.
+
+    Args:
+        cmd (str): The command string
+        explicit_type (str, optional): Explicitly specified type ('function' or 'alias')
+
+    Returns:
+        str: 'function' or 'alias'
+    """
     import re
 
+    if explicit_type:
+        return explicit_type
+
+    # Check if command uses positional parameters ($1, $2, ${1}, ${1:-default}, etc.)
+    if re.search(r'\$\{?\d+', cmd):
+        return 'function'
+    return 'alias'
+
+def generate_bash_aliases():
+    """Generate bash aliases file"""
     data = load_commands()
     alias_file = os.path.join(os.path.expanduser('~'), '.bash_aliascore')
 
@@ -236,12 +254,7 @@ def generate_bash_aliases():
         for item in items:
             name = item['name']
             cmd = item['cmd']
-            cmd_type = item.get('type')
-            if not cmd_type:
-                if re.search(r'\$\d+', cmd):
-                    cmd_type = 'function'
-                else:
-                    cmd_type = 'alias'
+            cmd_type = determine_command_type(cmd, item.get('type'))
             if cmd_type == 'function':
                 functions_to_unalias.append(name)
 
@@ -265,13 +278,7 @@ def generate_bash_aliases():
                 desc = item.get('desc', '')
 
                 # Auto-detect type: if command has $1, $2, etc., it's a function
-                cmd_type = item.get('type')
-                if not cmd_type:
-                    # Check if command uses positional parameters
-                    if re.search(r'\$\d+', cmd):
-                        cmd_type = 'function'
-                    else:
-                        cmd_type = 'alias'
+                cmd_type = determine_command_type(cmd, item.get('type'))
 
                 # Format description as inline comment
                 desc_suffix = f'  # {desc}' if desc else ''
