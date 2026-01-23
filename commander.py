@@ -161,9 +161,12 @@ def find_command_by_name(data: dict, command_name: str):
 
 def load_commands():
     """Load commands from YAML files."""
+    # Get the directory where the commander.py script is located (resolve symlinks)
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+
     # Load commands.yaml
     try:
-        with open("commands.yaml", 'r') as f:
+        with open(os.path.join(script_dir, "commands.yaml"), 'r', encoding='utf-8') as f:
             data = yaml.safe_load(f)
     except FileNotFoundError:
         print("Error: commands.yaml not found.")
@@ -174,7 +177,7 @@ def load_commands():
 
     # Load custom.yaml if it exists and merge with commands.yaml
     try:
-        with open("custom.yaml", 'r') as f:
+        with open(os.path.join(script_dir, "custom.yaml"), 'r', encoding='utf-8') as f:
             customData = yaml.safe_load(f)
             if customData:
                 for category, commands in customData.items():
@@ -213,7 +216,7 @@ complete -F _commander_completions ./commander.py
 """
 
     completion_file = os.path.join(os.path.expanduser('~'), '.commander-completion.bash')
-    with open(completion_file, 'w') as f:
+    with open(completion_file, 'w', encoding='utf-8') as f:
         f.write(completion_script)
 
     print(f"Bash completion script generated: {completion_file}")
@@ -258,7 +261,7 @@ def generate_bash_aliases():
             if cmd_type == 'function':
                 functions_to_unalias.append(name)
 
-    with open(alias_file, 'w') as out:
+    with open(alias_file, 'w', encoding='utf-8') as out:
         out.write("# AUTO-GENERATED FILE. DO NOT EDIT DIRECTLY.\n")
         out.write("# Edit commands.yaml or custom.yaml instead.\n\n")
 
